@@ -1,0 +1,119 @@
+#https://github.com/OAI/OpenAPI-Specification/blob/main/examples/v3.0/link-example.yaml
+openapi: "3.0.0"
+info:
+  version: 1.0.0
+  title: demo vertx
+  license:
+    name: MIT
+servers:
+  - url: http://localhost/v1
+paths:
+  /ws:
+    get:
+      summary: for websocket
+      operationId: ws
+      responses:
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /ws/query-user/{id}:
+    get:
+      summary: for query user
+      operationId: wsQueryUser
+      parameters:
+        - name: name
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: A paged array of pets
+          headers:
+            x-next:
+              description: A link to the next page of responses
+              schema:
+                type: string
+          content:
+            application/json:
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+#  /pets/{petId}:
+#    get:
+#      summary: Info for a specific pet
+#      operationId: showPetById
+#      tags:
+#        - pets
+#      parameters:
+#        - name: petId
+#          in: path
+#          required: true
+#          description: The id of the pet to retrieve
+#          schema:
+#            type: string
+#      responses:
+#        '200':
+#          description: Expected response to a valid request
+#          content:
+#            application/json:
+#              schema:
+#                $ref: "#/components/schemas/Pet"
+#        default:
+#          description: unexpected error
+#          content:
+#            application/json:
+#              schema:
+#                $ref: "#/components/schemas/Error"
+components:
+  schemas:
+    SqlRequest:
+      type: object
+      required:
+        - sql
+        - params
+      properties:
+        sql:
+          type: string
+        params:
+          type: array
+#    Pet:
+#      type: object
+#      required:
+#        - id
+#        - name
+#      properties:
+#        id:
+#          type: integer
+#          format: int64
+#        name:
+#          type: string
+#        tag:
+#          type: string
+#    Pets:
+#      type: array
+#      items:
+#        $ref: "#/components/schemas/Pet"
+    Error:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string

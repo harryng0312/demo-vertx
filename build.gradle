@@ -17,9 +17,16 @@ dependencies {
     implementation "org.apache.logging.log4j:log4j-core:${log4jVersion}"
     implementation "org.apache.logging.log4j:log4j-slf4j-impl:${log4jVersion}"
 
+    implementation "io.vertx:vertx-core:${vertxVersion}"
+    implementation "io.vertx:vertx-web:${vertxVersion}"
+    implementation "io.vertx:vertx-web-openapi:${vertxVersion}"
+    implementation "io.vertx:vertx-config:${vertxVersion}"
+    implementation "io.vertx:vertx-config-yaml:${vertxVersion}"
+
     implementation "io.smallrye.reactive:smallrye-mutiny-vertx-core:${smallryeVertxVersion}"
     implementation "io.smallrye.reactive:smallrye-mutiny-vertx-runtime:${smallryeVertxVersion}"
     implementation "io.smallrye.reactive:smallrye-mutiny-vertx-web:${smallryeVertxVersion}"
+    implementation "io.smallrye.reactive:smallrye-mutiny-vertx-web-common:${smallryeVertxVersion}"
     implementation "io.smallrye.reactive:smallrye-mutiny-vertx-pg-client:${smallryeVertxVersion}"
 
     implementation "io.vertx:vertx-pg-client:${vertxVersion}"
@@ -27,13 +34,16 @@ dependencies {
     implementation "org.bouncycastle:bcprov-jdk15on:${bcVersion}"
     implementation "org.bouncycastle:bctls-jdk15on:${bcVersion}"
 
+
+
+
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
 }
 
 shadowJar {
     manifest {
-        attributes 'Main-Class': 'org.harryng.demo.vertx.Main'
+        attributes 'Main-Class': 'org.harryng.demo.vertx.mutiny.MainVertxCore'
     }
 }
 
