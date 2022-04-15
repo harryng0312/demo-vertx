@@ -1,4 +1,4 @@
-package org.harryng.demo.natives;
+package org.harryng.demo.vertx;
 
 import io.vertx.core.impl.logging.Logger;
 import io.vertx.core.impl.logging.LoggerFactory;

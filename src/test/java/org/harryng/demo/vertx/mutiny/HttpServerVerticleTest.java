@@ -1,4 +1,4 @@
-package org.harryng.demo.natives.vertx.mutiny;
+package org.harryng.demo.vertx.mutiny;
 
 import io.vertx.core.http.HttpClientOptions;
 import io.vertx.core.http.HttpMethod;

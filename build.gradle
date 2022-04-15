@@ -1,17 +1,40 @@
 plugins {
     id 'java'
+    id 'com.github.johnrengelman.shadow' version '7.0.0'
 }
 
 group 'org.harryng.demo.vertx'
 version '1.0-SNAPSHOT'
+
+java.sourceCompatibility = JavaVersion.VERSION_17
+java.targetCompatibility = JavaVersion.VERSION_17
 
 repositories {
     mavenCentral()
 }
 
 dependencies {
+    implementation "org.apache.logging.log4j:log4j-core:${log4jVersion}"
+    implementation "org.apache.logging.log4j:log4j-slf4j-impl:${log4jVersion}"
+
+    implementation "io.smallrye.reactive:smallrye-mutiny-vertx-core:${smallryeVertxVersion}"
+    implementation "io.smallrye.reactive:smallrye-mutiny-vertx-runtime:${smallryeVertxVersion}"
+    implementation "io.smallrye.reactive:smallrye-mutiny-vertx-web:${smallryeVertxVersion}"
+    implementation "io.smallrye.reactive:smallrye-mutiny-vertx-pg-client:${smallryeVertxVersion}"
+
+    implementation "io.vertx:vertx-pg-client:${vertxVersion}"
+
+    implementation "org.bouncycastle:bcprov-jdk15on:${bcVersion}"
+    implementation "org.bouncycastle:bctls-jdk15on:${bcVersion}"
+
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
+}
+
+shadowJar {
+    manifest {
+        attributes 'Main-Class': 'org.harryng.demo.vertx.Main'
+    }
 }
 
 test {

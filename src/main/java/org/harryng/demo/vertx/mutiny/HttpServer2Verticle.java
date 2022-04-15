@@ -1,4 +1,4 @@
-package org.harryng.demo.natives.vertx.mutiny;
+package org.harryng.demo.vertx.mutiny;
 
 import io.smallrye.mutiny.Uni;
 import io.smallrye.mutiny.unchecked.Unchecked;
@@ -16,7 +16,7 @@ import io.vertx.mutiny.ext.web.Router;
 import io.vertx.mutiny.ext.web.RoutingContext;
 import io.vertx.mutiny.ext.web.handler.StaticHandler;
 import io.vertx.mutiny.sqlclient.Tuple;
-import org.harryng.demo.natives.ResourcesUtil;
+import org.harryng.demo.vertx.ResourcesUtil;
 
 import java.nio.charset.StandardCharsets;
 
