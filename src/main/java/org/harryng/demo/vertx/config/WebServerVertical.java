@@ -4,7 +4,7 @@ import io.smallrye.mutiny.Uni;
 import io.smallrye.mutiny.vertx.core.AbstractVerticle;
 import io.vertx.core.impl.logging.Logger;
 import io.vertx.core.impl.logging.LoggerFactory;
-import org.harryng.demo.vertx.router.WsRouter;
+import org.harryng.demo.vertx.router.RootRouter;
 
 public class WebServerVertical extends AbstractVerticle {
 
@@ -12,7 +12,7 @@ public class WebServerVertical extends AbstractVerticle {
 
     protected Uni<Void> init(){
         var server = vertx.createHttpServer(WebServerConfig.getHttpServerOptions());
-        var rootRouter = new WsRouter(vertx).init("/").getRouter();
+        var rootRouter = new RootRouter(vertx).init("/").getRouter();
         return server.requestHandler(rootRouter)
                 .exceptionHandler(DefaultHandler.getExceptionHandler())
                 .invalidRequestHandler(DefaultHandler.getInvalidRequestHandler())

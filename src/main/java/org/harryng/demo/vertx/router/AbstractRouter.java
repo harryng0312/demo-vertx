@@ -30,12 +30,12 @@ public abstract class AbstractRouter {
         getRouter().route(path).handler(this::onRequest).failureHandler(this::onFailure);
         getRouter().errorHandler(404, this::onDefaultError);
         initStaticRouting();
-        initRoutingMap();
+        initHttpWsRouting();
         return this;
     }
 
     protected abstract void initStaticRouting();
-    protected abstract void initRoutingMap();
+    protected abstract void initHttpWsRouting();
     public abstract void onRequest(RoutingContext context);
     public abstract void onFailure(RoutingContext context);
     public abstract void onDefaultError(RoutingContext context);

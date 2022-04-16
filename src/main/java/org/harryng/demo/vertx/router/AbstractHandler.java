@@ -1,11 +1,11 @@
-package org.harryng.demo.vertx.router.ws;
+package org.harryng.demo.vertx.router;
 
 import io.vertx.mutiny.core.Vertx;
 
-public class AbstractWsHandler {
+public class AbstractHandler {
     private Vertx vertx;
 
-    public AbstractWsHandler(Vertx vertx) {
+    public AbstractHandler(Vertx vertx) {
         this.vertx = vertx;
     }
 

@@ -6,10 +6,11 @@ import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.mutiny.core.Vertx;
 import io.vertx.mutiny.ext.web.RoutingContext;
+import org.harryng.demo.vertx.router.AbstractHandler;
 
 import java.nio.charset.StandardCharsets;
 
-public class WsUserHandler extends AbstractWsHandler{
+public class WsUserHandler extends AbstractHandler {
 
     static Logger logger = LoggerFactory.getLogger(WsUserHandler.class);
 
