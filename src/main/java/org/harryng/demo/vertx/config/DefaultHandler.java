@@ -14,6 +14,6 @@ public class DefaultHandler {
     }
 
     public static Consumer<Throwable> getExceptionHandler(){
-        return ex -> logger.error("", ex);
+        return ex -> logger.error("Default ex:", ex);
     }
 }

@@ -4,7 +4,6 @@ import io.smallrye.mutiny.Uni;
 import io.smallrye.mutiny.vertx.core.AbstractVerticle;
 import io.vertx.core.impl.logging.Logger;
 import io.vertx.core.impl.logging.LoggerFactory;
-import io.vertx.mutiny.ext.web.Router;
 import org.harryng.demo.vertx.router.WsRouter;
 
 public class WebServerVertical extends AbstractVerticle {
@@ -19,7 +18,6 @@ public class WebServerVertical extends AbstractVerticle {
                 .invalidRequestHandler(DefaultHandler.getInvalidRequestHandler())
                 .listen(WebServerConfig.getPort())
                 .invoke(() -> logger.info("HTTP server started on port " + server.actualPort()))
-                .onFailure().invoke(DefaultHandler.getExceptionHandler())
                 .replaceWithVoid();
     }
 

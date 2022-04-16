@@ -13,11 +13,13 @@ public abstract class AbstractRouter {
 
     public AbstractRouter(Vertx vertx, String path) {
         this.vertx = vertx;
-        router = Router.router(vertx);
         init(path);
     }
 
     public Router getRouter() {
+        if(router == null){
+            router = Router.router(vertx);
+        }
         return router;
     }
 
@@ -28,15 +30,13 @@ public abstract class AbstractRouter {
     public void init(String path) {
         getRouter().route(path).handler(this::onRequest).failureHandler(this::onFailure);
         getRouter().errorHandler(404, this::onDefaultError);
+        initStaticRouting();
+        initRoutingMap();
     }
 
+    protected abstract void initStaticRouting();
+    protected abstract void initRoutingMap();
     public abstract void onRequest(RoutingContext context);
-
-    public void onFailure(RoutingContext context) {
-
-    }
-
-    public void onDefaultError(RoutingContext context) {
-
-    }
+    public abstract void onFailure(RoutingContext context);
+    public abstract void onDefaultError(RoutingContext context);
 }
