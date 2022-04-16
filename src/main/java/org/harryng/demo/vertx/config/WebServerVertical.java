@@ -12,7 +12,7 @@ public class WebServerVertical extends AbstractVerticle {
 
     protected Uni<Void> init(){
         var server = vertx.createHttpServer(WebServerConfig.getHttpServerOptions());
-        var rootRouter = new WsRouter(vertx, "/").getRouter();
+        var rootRouter = new WsRouter(vertx).init("/").getRouter();
         return server.requestHandler(rootRouter)
                 .exceptionHandler(DefaultHandler.getExceptionHandler())
                 .invalidRequestHandler(DefaultHandler.getInvalidRequestHandler())

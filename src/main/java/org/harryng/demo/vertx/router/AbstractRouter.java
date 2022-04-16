@@ -11,9 +11,8 @@ public abstract class AbstractRouter {
     private Router router = null;
     private Vertx vertx = null;
 
-    public AbstractRouter(Vertx vertx, String path) {
+    public AbstractRouter(Vertx vertx) {
         this.vertx = vertx;
-        init(path);
     }
 
     public Router getRouter() {
@@ -27,11 +26,12 @@ public abstract class AbstractRouter {
         return vertx;
     }
 
-    public void init(String path) {
+    public AbstractRouter init(String path) {
         getRouter().route(path).handler(this::onRequest).failureHandler(this::onFailure);
         getRouter().errorHandler(404, this::onDefaultError);
         initStaticRouting();
         initRoutingMap();
+        return this;
     }
 
     protected abstract void initStaticRouting();

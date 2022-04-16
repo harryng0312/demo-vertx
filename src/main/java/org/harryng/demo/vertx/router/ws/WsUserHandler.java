@@ -1,13 +1,11 @@
 package org.harryng.demo.vertx.router.ws;
 
-import io.smallrye.mutiny.unchecked.Unchecked;
 import io.vertx.core.impl.logging.Logger;
 import io.vertx.core.impl.logging.LoggerFactory;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.mutiny.core.Vertx;
 import io.vertx.mutiny.ext.web.RoutingContext;
-import io.vertx.mutiny.sqlclient.Tuple;
 
 import java.nio.charset.StandardCharsets;
 

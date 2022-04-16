@@ -12,31 +12,18 @@ import java.util.function.Consumer;
 
 public class WsRouter extends AbstractRouter {
 
-    private Map<String, Consumer<RoutingContext>> routingMap = null;
+    private Map<String, Consumer<RoutingContext>> routingMap = new HashMap<>();;
 
-    private WsUserHandler wsUserHandler = null;
+    private WsUserHandler wsUserHandler = new WsUserHandler(getVertx());;
 
-    public Map<String, Consumer<RoutingContext>> getRoutingMap() {
-        if (routingMap == null) {
-            routingMap = new HashMap<>();
-        }
-        return routingMap;
-    }
-
-    public WsUserHandler getWsUserHandler() {
-        if (wsUserHandler == null) {
-            wsUserHandler = new WsUserHandler(getVertx());
-        }
-        return wsUserHandler;
-    }
-
-    public WsRouter(Vertx vertx, String path) {
-        super(vertx, path);
+    public WsRouter(Vertx vertx) {
+        super(vertx);
     }
 
     @Override
-    public void init(String path) {
+    public WsRouter init(String path) {
         super.init(path);
+        return this;
     }
 
     @Override
@@ -49,12 +36,12 @@ public class WsRouter extends AbstractRouter {
     }
 
     protected void declareRoutingMap(){
-        getRoutingMap().put("/ws/user/add", getWsUserHandler()::add);
+        routingMap.put("/ws/user/add", wsUserHandler::add);
     }
     @Override
     protected void initRoutingMap() {
         declareRoutingMap();
-        getRoutingMap().forEach((key, val) -> getRouter().route(key).handler(val));
+        routingMap.forEach((key, val) -> getRouter().route(key).handler(val));
     }
 
     @Override
