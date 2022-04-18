@@ -8,6 +8,7 @@ import org.thymeleaf.messageresolver.StandardMessageResolver;
 import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
 
 import java.util.Map;
+import java.util.PropertyResourceBundle;
 import java.util.Set;
 
 public class TemplateHandler extends AbstractHandler {
@@ -27,7 +28,7 @@ public class TemplateHandler extends AbstractHandler {
     protected static void initMessageResolver(TemplateEngine templateEngine) {
 //        var customMessageResolver = new CustomMessageResolver();
         var msgResolver = new StandardMessageResolver();
-//        msgResolver.
+//        msgResolver.setDefaultMessages();
         templateEngine.<org.thymeleaf.TemplateEngine>unwrap().setMessageResolver(msgResolver);
     }
 
