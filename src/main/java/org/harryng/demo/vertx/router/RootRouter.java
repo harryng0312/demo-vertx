@@ -33,7 +33,7 @@ public class RootRouter extends AbstractRouter {
 
     @Override
     protected void initStaticRouting() {
-        var staticResourcesHandler = new StaticResourcesHandler(getVertx(), "/webapps");
+        var staticResourcesHandler = new StaticResourcesHandler(getVertx(), "webapps");
         var staticRouter = Router.router(getVertx());
         var staticHandler = staticResourcesHandler.createStaticHandler();
         staticRouter.route("/*").handler(staticHandler)
