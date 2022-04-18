@@ -3,13 +3,11 @@ package org.harryng.demo.vertx.router.http;
 import io.vertx.ext.web.templ.thymeleaf.ThymeleafTemplateEngine;
 import io.vertx.mutiny.core.Vertx;
 import io.vertx.mutiny.ext.web.common.template.TemplateEngine;
+import org.harryng.demo.vertx.config.TemplateMessageResolver;
 import org.harryng.demo.vertx.router.AbstractHandler;
-import org.thymeleaf.messageresolver.StandardMessageResolver;
 import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
 
-import java.util.Map;
-import java.util.PropertyResourceBundle;
-import java.util.Set;
+import java.util.Locale;
 
 public class TemplateHandler extends AbstractHandler {
     private static TemplateEngine templateEngine = null;
@@ -26,10 +24,8 @@ public class TemplateHandler extends AbstractHandler {
     }
 
     protected static void initMessageResolver(TemplateEngine templateEngine) {
-//        var customMessageResolver = new CustomMessageResolver();
-        var msgResolver = new StandardMessageResolver();
-//        msgResolver.setDefaultMessages();
-        templateEngine.<org.thymeleaf.TemplateEngine>unwrap().setMessageResolver(msgResolver);
+        var templateMsgResolver = new TemplateMessageResolver("i18n.msg", Locale.ENGLISH, Locale.forLanguageTag("vi"));
+        templateEngine.<org.thymeleaf.TemplateEngine>unwrap().setMessageResolver(templateMsgResolver);
     }
 
     protected static TemplateEngine createTemplateEngine(Vertx vertx) {

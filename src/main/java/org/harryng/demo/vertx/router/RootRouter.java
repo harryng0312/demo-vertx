@@ -73,8 +73,6 @@ public class RootRouter extends AbstractRouter {
 
         var httpRouter = Router.router(getVertx());
         httpRouter.route("/").failureHandler(this::onFailure);
-//        wsHttpRoutingMap.forEach((path, func) -> func.forEach(
-//                (cons, method) -> method.forEach(meth -> httpRouter.route(meth, path).handler(cons))));
         wsHttpRoutingMap.forEach((path, func) -> func.forEach(
                 (cons, method) -> {
                     if (method.isEmpty()) {
