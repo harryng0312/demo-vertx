@@ -13,7 +13,7 @@ public class HttpIndexHandler extends AbstractHandler {
 
     public void getIndex(RoutingContext context){
         var tEngine = TemplateHandler.getTemplateEngine(getVertx());
-        tEngine.render(Map.of(), "templates/pages/html/index.html")
+        tEngine.render(Map.of(), "pages/html/index")
                 .subscribe().with(buff -> {
                     context.response().end(buff).subscribe().with(it->{}, ex -> {});
                 }, ex -> {});

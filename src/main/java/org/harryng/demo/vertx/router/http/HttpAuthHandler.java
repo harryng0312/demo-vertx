@@ -13,7 +13,7 @@ public class HttpAuthHandler extends AbstractHandler {
 
     public void getLogin(RoutingContext context){
         var tEngine = TemplateHandler.getTemplateEngine(getVertx());
-        tEngine.render(Map.of(), "templates/pages/auth/login.html")
+        tEngine.render(Map.of(), "pages/auth/login")
                 .subscribe().with(buff -> {
                     context.response().end(buff).subscribe().with(it->{}, ex -> {});
                 }, ex -> {});
@@ -21,7 +21,7 @@ public class HttpAuthHandler extends AbstractHandler {
 
     public void postLogin(RoutingContext context){
         var tEngine = TemplateHandler.getTemplateEngine(getVertx());
-        tEngine.render(Map.of(), "templates/pages/auth/login.html")
+        tEngine.render(Map.of(), "pages/auth/login")
                 .subscribe().with(buff -> {
                     context.response().end(buff).subscribe().with(it->{}, ex -> {});
                 }, ex -> {});

@@ -13,7 +13,7 @@ public class StaticResourcesHandler extends AbstractHandler {
         this.path = path;
     }
 
-    public StaticHandler createStaticHandler(){
+    public StaticHandler createStaticHandler() {
         return StaticHandler.create(path);
     }
 }
