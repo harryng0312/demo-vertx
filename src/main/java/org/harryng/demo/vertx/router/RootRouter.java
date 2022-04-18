@@ -4,21 +4,23 @@ import io.vertx.core.http.HttpMethod;
 import io.vertx.mutiny.core.Vertx;
 import io.vertx.mutiny.ext.web.Router;
 import io.vertx.mutiny.ext.web.RoutingContext;
+import org.harryng.demo.vertx.router.http.HttpAuthHandler;
+import org.harryng.demo.vertx.router.http.HttpIndexHandler;
 import org.harryng.demo.vertx.router.http.HttpUserHandler;
 import org.harryng.demo.vertx.router.staticresource.StaticResourcesHandler;
 import org.harryng.demo.vertx.router.ws.WsUserHandler;
 
-import java.util.AbstractMap;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.lang.reflect.Method;
+import java.util.*;
 import java.util.function.Consumer;
 
 public class RootRouter extends AbstractRouter {
 
-    private Map<String, Map<HttpMethod, Consumer<RoutingContext>>> wsHttpRoutingMap = new HashMap<>();
+    private Map<String, Map<Consumer<RoutingContext>, List<HttpMethod>>> wsHttpRoutingMap = new HashMap<>();
     private Map<String, Consumer<RoutingContext>> wsRoutingMap = new HashMap<>();
     private HttpUserHandler httpUserHandler = new HttpUserHandler(getVertx());
+    private HttpIndexHandler httpIndexHandler = new HttpIndexHandler(getVertx());
+    private HttpAuthHandler httpAuthHandler = new HttpAuthHandler(getVertx());
     private WsUserHandler wsUserHandler = new WsUserHandler(getVertx());
 
     public RootRouter(Vertx vertx) {
@@ -46,13 +48,18 @@ public class RootRouter extends AbstractRouter {
     }
 
     protected void declareHttpRoutingMap() {
+        wsHttpRoutingMap.put("/index", Map.ofEntries(
+                new AbstractMap.SimpleEntry<>(httpIndexHandler::getIndex, List.of())));
+        wsHttpRoutingMap.put("/login", Map.ofEntries(
+                new AbstractMap.SimpleEntry<>(httpAuthHandler::getLogin, List.of(HttpMethod.GET)),
+                new AbstractMap.SimpleEntry<>(httpAuthHandler::postLogin, List.of(HttpMethod.POST))
+        ));
         wsHttpRoutingMap.put("/user", Map.ofEntries(
-                new AbstractMap.SimpleEntry<>(HttpMethod.GET,       httpUserHandler::getById),
-                new AbstractMap.SimpleEntry<>(HttpMethod.POST,      httpUserHandler::add),
-                new AbstractMap.SimpleEntry<>(HttpMethod.PUT,       httpUserHandler::edit),
-                new AbstractMap.SimpleEntry<>(HttpMethod.DELETE,    httpUserHandler::remove),
-                new AbstractMap.SimpleEntry<>(HttpMethod.PROPFIND,  httpUserHandler::search))
-        );
+                new AbstractMap.SimpleEntry<>(httpUserHandler::getById, List.of(HttpMethod.GET)),
+                new AbstractMap.SimpleEntry<>(httpUserHandler::add, List.of(HttpMethod.POST)),
+                new AbstractMap.SimpleEntry<>(httpUserHandler::edit, List.of(HttpMethod.PUT)),
+                new AbstractMap.SimpleEntry<>(httpUserHandler::remove, List.of(HttpMethod.DELETE)),
+                new AbstractMap.SimpleEntry<>(httpUserHandler::search, List.of(HttpMethod.PROPFIND))));
     }
 
     @Override
@@ -66,8 +73,16 @@ public class RootRouter extends AbstractRouter {
 
         var httpRouter = Router.router(getVertx());
         httpRouter.route("/").failureHandler(this::onFailure);
-        wsHttpRoutingMap.forEach((key, key2Val) -> key2Val.forEach(
-                (key2, val) -> httpRouter.route(key2, key).handler(val)));
+//        wsHttpRoutingMap.forEach((path, func) -> func.forEach(
+//                (cons, method) -> method.forEach(meth -> httpRouter.route(meth, path).handler(cons))));
+        wsHttpRoutingMap.forEach((path, func) -> func.forEach(
+                (cons, method) -> {
+                    if (method.isEmpty()) {
+                        httpRouter.route(path).handler(cons);
+                    } else {
+                        method.forEach(meth -> httpRouter.route(meth, path).handler(cons));
+                    }
+                }));
 
         getRouter().mountSubRouter("/http", httpRouter);
         getRouter().mountSubRouter("/ws", wsRouter);
@@ -75,7 +90,7 @@ public class RootRouter extends AbstractRouter {
 
     @Override
     public void onRequest(RoutingContext context) {
-
+        context.reroute("/http/index");
     }
 
     @Override
