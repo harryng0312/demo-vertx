@@ -15,9 +15,9 @@ public class HttpAuthHandler extends AbstractHandler {
         var tEngine = TemplateHandler.getTemplateEngine(getVertx());
         tEngine.render(Map.of(), "pages/auth/login")
                 .subscribe().with(buff -> {
-                    context.response().write(buff).flatMap(v -> context.end())
-                            .subscribe().with(it -> {
-                            }, ex -> {
+//                    context.response().endAndForget(buff);
+                    context.response().setChunked(true).write(buff)
+                            .eventually(() -> context.end()).subscribe().with(v -> {
                             });
                 }, ex -> {
                 });
