@@ -14,6 +14,6 @@ public class StaticResourcesHandler extends AbstractHandler {
     }
 
     public StaticHandler createStaticHandler(){
-        return StaticHandler.create(path);
+        return StaticHandler.create(path).setIndexPage("index.html");
     }
 }

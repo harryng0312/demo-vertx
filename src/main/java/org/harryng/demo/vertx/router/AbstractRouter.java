@@ -2,6 +2,7 @@ package org.harryng.demo.vertx.router;
 
 import io.vertx.core.impl.logging.Logger;
 import io.vertx.core.impl.logging.LoggerFactory;
+import io.vertx.ext.web.AllowForwardHeaders;
 import io.vertx.mutiny.core.Vertx;
 import io.vertx.mutiny.ext.web.Router;
 import io.vertx.mutiny.ext.web.RoutingContext;
@@ -28,6 +29,7 @@ public abstract class AbstractRouter {
 
     public AbstractRouter init(String path) {
         getRouter().route(path).handler(this::onRequest).failureHandler(this::onFailure);
+        getRouter().allowForward(AllowForwardHeaders.ALL);
         getRouter().errorHandler(404, this::onDefaultError);
         initStaticRouting();
         initHttpWsRouting();

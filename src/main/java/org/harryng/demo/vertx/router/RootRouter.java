@@ -1,15 +1,16 @@
 package org.harryng.demo.vertx.router;
 
 import io.vertx.core.http.HttpMethod;
+import io.vertx.ext.web.templ.thymeleaf.ThymeleafTemplateEngine;
 import io.vertx.mutiny.core.Vertx;
 import io.vertx.mutiny.ext.web.Router;
 import io.vertx.mutiny.ext.web.RoutingContext;
+import io.vertx.mutiny.ext.web.common.template.TemplateEngine;
 import org.harryng.demo.vertx.router.http.HttpUserHandler;
 import org.harryng.demo.vertx.router.staticresource.StaticResourcesHandler;
 import org.harryng.demo.vertx.router.ws.WsUserHandler;
 
 import java.util.AbstractMap;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -18,6 +19,8 @@ public class RootRouter extends AbstractRouter {
 
     private Map<String, Map<HttpMethod, Consumer<RoutingContext>>> wsHttpRoutingMap = new HashMap<>();
     private Map<String, Consumer<RoutingContext>> wsRoutingMap = new HashMap<>();
+    private TemplateEngine templateEngine = null;
+
     private HttpUserHandler httpUserHandler = new HttpUserHandler(getVertx());
     private WsUserHandler wsUserHandler = new WsUserHandler(getVertx());
 
@@ -33,12 +36,12 @@ public class RootRouter extends AbstractRouter {
 
     @Override
     protected void initStaticRouting() {
-        var staticResourcesHandler = new StaticResourcesHandler(getVertx(), "/webapps");
-        var staticRouter = Router.router(getVertx());
+        var staticResourcesHandler = new StaticResourcesHandler(getVertx(), "webapps");
         var staticHandler = staticResourcesHandler.createStaticHandler();
-        staticRouter.route("/*").handler(staticHandler)
+        var staticRouter = Router.router(getVertx());
+        staticRouter.route("/static/*").handler(staticHandler)
                 .failureHandler(this::onFailure);
-        getRouter().mountSubRouter("/static/", staticRouter);
+        getRouter().mountSubRouter("/", staticRouter);
     }
 
     protected void declareWsRoutingMap() {
@@ -47,11 +50,11 @@ public class RootRouter extends AbstractRouter {
 
     protected void declareHttpRoutingMap() {
         wsHttpRoutingMap.put("/user", Map.ofEntries(
-                new AbstractMap.SimpleEntry<>(HttpMethod.GET,       httpUserHandler::getById),
-                new AbstractMap.SimpleEntry<>(HttpMethod.POST,      httpUserHandler::add),
-                new AbstractMap.SimpleEntry<>(HttpMethod.PUT,       httpUserHandler::edit),
-                new AbstractMap.SimpleEntry<>(HttpMethod.DELETE,    httpUserHandler::remove),
-                new AbstractMap.SimpleEntry<>(HttpMethod.PROPFIND,  httpUserHandler::search))
+                new AbstractMap.SimpleEntry<>(HttpMethod.GET, httpUserHandler::getById),
+                new AbstractMap.SimpleEntry<>(HttpMethod.POST, httpUserHandler::add),
+                new AbstractMap.SimpleEntry<>(HttpMethod.PUT, httpUserHandler::edit),
+                new AbstractMap.SimpleEntry<>(HttpMethod.DELETE, httpUserHandler::remove),
+                new AbstractMap.SimpleEntry<>(HttpMethod.PROPFIND, httpUserHandler::search))
         );
     }
 
@@ -75,22 +78,25 @@ public class RootRouter extends AbstractRouter {
 
     @Override
     public void onRequest(RoutingContext context) {
-
+        logger.info("onRequest: path:[" + context.request().uri() + "] code:" + context.response().getStatusCode());
+        context.reroute("/static/index.html");
     }
 
     @Override
     public void onFailure(RoutingContext context) {
         context.response()
-                .setStatusCode(context.statusCode())
                 .end()
                 .subscribe().with(itm -> {
-                            logger.info("OnFailure");
+                            logger.info("onFailure: path[" + context.request().uri() + "] code:"
+                                    + context.response().getStatusCode());
                         },
                         ex -> logger.error("Route err:", ex));
     }
 
     @Override
     public void onDefaultError(RoutingContext context) {
+        logger.info("onDefaultError: path[" + context.request().uri() + "] code:" + context.response().getStatusCode());
         context.reroute("/static/error.html");
+//        context.response().set
     }
 }
