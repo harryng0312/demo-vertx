@@ -1,6 +1,7 @@
 package org.harryng.demo.vertx.router;
 
 import io.vertx.core.http.HttpMethod;
+import io.vertx.ext.web.AllowForwardHeaders;
 import io.vertx.mutiny.core.Vertx;
 import io.vertx.mutiny.ext.web.Router;
 import io.vertx.mutiny.ext.web.RoutingContext;
@@ -36,9 +37,15 @@ public class RootRouter extends AbstractRouter {
     @Override
     protected void initStaticRouting() {
         var staticResourcesHandler = new StaticResourcesHandler(getVertx(), "webapps");
-        var staticRouter = Router.router(getVertx());
         var staticHandler = staticResourcesHandler.createStaticHandler();
-        staticRouter.route("/*").handler(staticHandler)
+        staticHandler.setCachingEnabled(false);
+        var staticRouter = Router.router(getVertx());
+        staticRouter.allowForward(AllowForwardHeaders.ALL);
+        staticRouter.route("/*")
+                .produces("image/*").consumes("image/*")
+                .produces("text/*").consumes("text/*")
+                .produces("application/*").consumes("application/*")
+                .handler(staticHandler)
                 .failureHandler(this::onFailure);
         getRouter().mountSubRouter("/static/", staticRouter);
     }
@@ -88,7 +95,7 @@ public class RootRouter extends AbstractRouter {
 
     @Override
     public void onRequest(RoutingContext context) {
-        context.reroute("/http/index");
+        context.reroute("/static/index.html");
     }
 
     @Override
