@@ -1,0 +1,8 @@
+{
+  "login": {
+    "title": "Đăng nhập",
+    "username": "Tài khoản",
+    "password": "Mật khẩu",
+    "submit" : "Đăng nhập"
+  }
+}

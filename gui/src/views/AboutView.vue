@@ -1,15 +1,16 @@
+<script setup lang="ts">
+import HomeLayout from "@/layouts/HomeLayout.vue";
+import About from "@/components/About.vue";
+</script>
+
 <template>
-  <div class="about">
-    <h1>This is an about page</h1>
-  </div>
+  <home-layout>
+    <template #body>
+      <about/>
+    </template>
+  </home-layout>
 </template>
 
 <style>
-@media (min-width: 1024px) {
-  .about {
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-  }
-}
+
 </style>

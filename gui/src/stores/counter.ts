@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 
-export const useCounterStore = defineStore({
+const useCounterStore = defineStore({
   id: 'counter',
   state: () => ({
     counter: 0
@@ -13,4 +13,14 @@ export const useCounterStore = defineStore({
       this.counter++
     }
   }
-})
+});
+
+const getTokenStore = defineStore({
+  id: "token",
+  state: () => ({
+    token: ""
+  }),
+  actions: {}
+});
+
+export {useCounterStore, getTokenStore};
