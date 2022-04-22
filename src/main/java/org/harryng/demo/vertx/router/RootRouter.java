@@ -42,9 +42,10 @@ public class RootRouter extends AbstractRouter {
         var staticRouter = Router.router(getVertx());
         staticRouter.allowForward(AllowForwardHeaders.ALL);
         staticRouter.route("/*")
-                .produces("image/*").consumes("image/*")
-                .produces("text/*").consumes("text/*")
-                .produces("application/*").consumes("application/*")
+                .produces("*/*").consumes("*/*")
+//                .produces("image/*").consumes("image/*")
+//                .produces("text/*").consumes("text/*")
+//                .produces("application/*").consumes("application/*")
                 .handler(staticHandler)
                 .failureHandler(this::onFailure);
         getRouter().mountSubRouter("/static/", staticRouter);
