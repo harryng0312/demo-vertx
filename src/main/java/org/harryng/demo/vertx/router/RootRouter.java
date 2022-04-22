@@ -88,7 +88,7 @@ public class RootRouter extends AbstractRouter {
 
     @Override
     public void onRequest(RoutingContext context) {
-        context.reroute("/http/index");
+        context.reroute("/static/index.html");
     }
 
     @Override
