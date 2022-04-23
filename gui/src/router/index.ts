@@ -30,7 +30,7 @@ const router = createRouter({
   ]
 });
 router.beforeEach((to, from, next)=>{
-  if(to.name !== "login" && !isAuthenticated(to, from)){
+  if(to.name !== "login" && to.name !== "notFound" && !isAuthenticated(to, from)){
     next({name:"login"});
   }else{
     next();
