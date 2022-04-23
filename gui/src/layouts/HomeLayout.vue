@@ -3,17 +3,11 @@ import {RouterLink} from 'vue-router';
 </script>
 
 <script lang="ts">
-import {getTokenStore} from "@/stores/counter";
+
 
 export default {
   name: "HomeLayout",
-  beforeMount() {
-    let token = getTokenStore().token;
-    if(token === ""){
-      this.$router.push("/login");
-      console.log(`route stack size: ${this.$router.getRoutes().length}`);
-    }
-  }
+
 }
 </script>
 
