@@ -13,7 +13,7 @@ const router = createRouter({
     },{
       path: '/',
       name: 'home',
-      component: HomeView
+      component: HomeView,
     },{
       path: '/about',
       name: 'about',
@@ -26,6 +26,10 @@ const router = createRouter({
       component: () => import("../views/NotFound.vue")
     }
   ]
-})
+});
+router.beforeEach((to, from, next)=>{
+  // if (to.name !== 'Login' && !isAuthenticated) next({ name: 'login' });
+  // else next();
+});
 
 export default router
