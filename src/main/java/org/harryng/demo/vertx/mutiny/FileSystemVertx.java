@@ -324,7 +324,9 @@ public class FileSystemVertx {
                 })
                 .onFailure().invoke(ex -> logger.info("Exception: ", ex))
                 .subscribe().with(context, item -> {
+                    logger.info("Copied done!");
                 }, failure -> {
+                    logger.error("", failure);
                 });
     }
 }
