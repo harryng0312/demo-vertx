@@ -1,5 +1,6 @@
 package org.harryng.demo.vertx.mutiny;
 
+import io.smallrye.mutiny.Context;
 import io.smallrye.mutiny.Multi;
 import io.smallrye.mutiny.Uni;
 import io.smallrye.mutiny.unchecked.Unchecked;
@@ -13,8 +14,9 @@ import io.vertx.mutiny.core.file.AsyncFile;
 
 import java.io.FileNotFoundException;
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicReference;
 
 public class FileSystemVertx {
     static Logger logger = LoggerFactory.getLogger(FileSystemVertx.class);
@@ -239,10 +241,13 @@ public class FileSystemVertx {
         var destPath = "files/BadgeChainDemo_1.mp4";
         int buffSize = 1024 * 1024;
         int buffElement = 32;
-        AtomicInteger srcCount = new AtomicInteger(0);
-        AtomicInteger destCount = new AtomicInteger(0);
-        AtomicReference<AsyncFile> srcFileGlobal = new AtomicReference<>();
-        AtomicReference<AsyncFile> destFileGlobal = new AtomicReference<>();
+
+        Map<String, Object> contextVars = new HashMap<>();
+        contextVars.put("srcCount", 0);
+        contextVars.put("destCount", 0);
+
+        var context = Context.from(contextVars);
+
         getVertx().fileSystem()
                 .exists(srcPath)
                 .flatMap(Unchecked.function(srcPathExisting -> {
@@ -260,48 +265,65 @@ public class FileSystemVertx {
                         getVertx().fileSystem().createFile(destPath)
                         : getVertx().fileSystem().delete(destPath)))
                 .flatMap(Unchecked.function(v -> getVertx().fileSystem().open(srcPath, new OpenOptions().setRead(true))))
-                .map(srcFile -> {
-                    srcFileGlobal.set(srcFile);
+                .attachContext()
+                .map(srcFileWithCtx -> {
+                    AsyncFile srcFile = srcFileWithCtx.get();
+                    srcFileWithCtx.context().put("srcFileGlobal", srcFile);
                     return srcFile;
                 })
-                .onItem().transformToMulti(srcFile -> Multi.createFrom().<Buffer>emitter(multiEmitter -> {
+                .attachContext()
+                .onItem().transformToMulti(srcFileWithCtx -> Multi.createFrom().<Buffer>emitter(multiEmitter -> {
+                    AsyncFile srcFile = srcFileWithCtx.get();
                     srcFile.setReadBufferSize(buffSize)
                             .handler(buffer -> {
                                 multiEmitter.emit(buffer);
-                                var sc = srcCount.incrementAndGet();
+                                var srcCount = srcFileWithCtx.context()
+                                        .<Integer>get("srcCount");
+                                var srcFileGlobal = srcFileWithCtx.context()
+                                        .<AsyncFile>get("srcFileGlobal");
+                                var sc = ++srcCount;
                                 if (sc % buffElement == 0) {
-                                    srcFileGlobal.get().pause();
+                                    srcFileGlobal.pause();
                                     logger.info("Src pause!");
                                 }
                             })
                             .endHandler(() -> {
                                 srcFile.closeAndForget();
-                                srcFileGlobal.set(null);
+                                srcFileWithCtx.context().delete("srcFileGlobal");
                                 multiEmitter.complete();
                                 logger.info("Src file is closed!");
                             });
                 }))
                 .concatMap(buffer -> getVertx().fileSystem().open(destPath, new OpenOptions().setAppend(true))
-                        .map(destFile -> {
-                            destFileGlobal.set(destFile);
+                        .attachContext()
+                        .map(destFileWithCtx -> {
+                            AsyncFile destFile = destFileWithCtx.get();
+                            destFileWithCtx.context().put("destFileGlobal", destFile);
                             return destFile;
                         })
                         .toMulti()
                         .flatMap(destFile -> destFile.write(buffer).map(v -> destFile.flushAndForget()).toMulti()))
-                .map(destFile -> {
-                    var dc = destCount.incrementAndGet();
-                    if (dc == srcCount.get() && srcFileGlobal.get() != null) {
-                        srcFileGlobal.get().resume();
+                .attachContext()
+                .map(destFileWithCtx -> {
+                    var srcCount = destFileWithCtx.context()
+                            .<Integer>get("srcCount");
+                    var destCount = destFileWithCtx.context()
+                            .<Integer>get("destCount");
+                    var dc = ++destCount;
+                    AsyncFile destFile = destFileWithCtx.get();
+                    if (dc.equals(srcCount) && destFileWithCtx.context().contains("srcFileGlobal")) {
+                        var srcFileGlobal = destFileWithCtx.context().<AsyncFile>get("srcFileGlobal");
+                        srcFileGlobal.resume();
                         logger.info("Src resume!");
                     }
                     return destFile;
                 })
-                .onCompletion().invoke(() -> {
+                .collect().last().invoke(destFile -> {
                     logger.info("Dest file is closed!");
-                    destFileGlobal.get().closeAndForget();
+                    destFile.closeAndForget();
                 })
                 .onFailure().invoke(ex -> logger.info("Exception: ", ex))
-                .subscribe().with(item -> {
+                .subscribe().with(context, item -> {
                 }, failure -> {
                 });
     }
