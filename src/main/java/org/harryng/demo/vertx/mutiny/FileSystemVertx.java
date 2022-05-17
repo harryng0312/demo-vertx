@@ -302,7 +302,10 @@ public class FileSystemVertx {
                             return destFile;
                         })
                         .toMulti()
-                        .flatMap(destFile -> destFile.write(buffer).map(v -> destFile.flushAndForget()).toMulti()))
+                        .flatMap(destFile -> {
+                            destFile.writeAndForget(buffer);
+                            return Multi.createFrom().item(destFile.flushAndForget());
+                        }))
                 .attachContext()
                 .map(destFileWithCtx -> {
                     var srcCount = destFileWithCtx.context()
