@@ -1,17 +1,16 @@
 package org.harryng.demo.vertx;
 
-import io.vertx.core.impl.logging.Logger;
-import io.vertx.core.impl.logging.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Properties;
 
+@Slf4j
 public class Db {
 
-    static Logger logger = LoggerFactory.getLogger(Db.class);
+//    static Logger logger = LoggerFactory.getLogger(Db.class);
 
     private Connection connection = null;
 
@@ -28,7 +27,7 @@ public class Db {
     }
 
     public void insertDb() {
-        logger.info("insert into db");
+        log.info("insert into db");
     }
 
     public void updateDb() {
@@ -47,18 +46,16 @@ public class Db {
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
             ResultSet resultSet = preparedStatement.executeQuery();
             while (resultSet.next()) {
-                logger.info("Screename[" + resultSet.getLong("id_") + "]: " + resultSet.getString("username"));
+                log.info("Screename[" + resultSet.getLong("id_") + "]: " + resultSet.getString("username"));
             }
             preparedStatement.close();
-        } catch (SQLException e) {
-            logger.error("", e);
-        } catch (ClassNotFoundException e) {
-            logger.error("", e);
+        } catch (SQLException | ClassNotFoundException e) {
+            log.error("", e);
         } finally {
             try {
                 closeConn();
             } catch (SQLException e) {
-                logger.error("", e);
+                log.error("", e);
             }
         }
     }

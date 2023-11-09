@@ -2,6 +2,7 @@ package org.harryng.demo.vertx;
 
 import io.vertx.core.impl.logging.Logger;
 import io.vertx.core.impl.logging.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -9,8 +10,9 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 
+@Slf4j
 public class FileAccession {
-    static Logger logger = LoggerFactory.getLogger(FileAccession.class);
+//    static Logger logger = LoggerFactory.getLogger(FileAccession.class);
     static String dirName = "./files";
     static String fileName = "test.txt";
 
@@ -18,7 +20,7 @@ public class FileAccession {
         var dirPath = Paths.get(dirName);
         if (!Files.exists(dirPath)) {
             Files.createDirectory(dirPath);
-            logger.info("Dir is created!");
+            log.info("Dir is created!");
         }
         var filePath = Paths.get(String.format("%s/%s", dirName, fileName));
         if (!Files.exists(filePath)) {
@@ -31,7 +33,7 @@ public class FileAccession {
         var filePath = Paths.get(String.format("%s/%s", dirName, fileName));
         if (Files.exists(filePath)) {
             var str = Files.readString(filePath, StandardCharsets.UTF_8);
-            logger.info(str);
+            log.info(str);
         }
     }
 }
